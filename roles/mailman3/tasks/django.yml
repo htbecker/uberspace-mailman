@@ -1,0 +1,50 @@
+---
+# Here we do not follow the tutorial directly. Instead of changing
+# the settings.py which is quite a hassle because we need to change
+# blocks of text but blockinfile does not support regexp for replacing
+# Solution: the settings.py is extended to include a mailman-settings.py
+# which will overwrite the existing variables
+- name: Configure Django App
+  template:
+    src: settings_local.py
+    dest: "~/{{ base_dir }}/mailman-suite/"
+
+- name: Settings up Django App
+  block:
+  - name: Migrate data
+    command: python3.6 manage.py migrate
+    args:
+      chdir: "~/{{ base_dir }}/mailman-suite/"
+      creates: "~/{{ base_dir }}/mailman-suite/mailmansuite.db"
+  - name: Collect static django files
+    command: python3.6 manage.py collectstatic
+    args:
+      chdir: "~/{{ base_dir }}/mailman-suite/"
+      creates: "{{ ansible_facts.env.HOME }}/html/static"
+  # There is no way to directly check if a superuser is already created.
+  # But creating a second time breaks the play. So we need to manually check
+  # this. Currently quite brutal via a DB dump...
+  - name: Check if superuser exists
+    shell: "python3.6 manage.py dumpdata | grep -c '\"is_superuser\": true, \"username\": \"{{ django_superuser_name }}'"
+    args:
+      chdir: "~/{{ base_dir }}/mailman-suite/"
+    register: superuser
+    changed_when: false
+  - name: Create django superuser
+    when: superuser.stdout|int == 0
+    expect:
+      command: python3.6 manage.py createsuperuser
+      responses:
+        (?i)username: "{{ django_superuser_name }}"
+        (?i)email: "{{ django_superuser_email }}"
+        (?i)password: "{{ django_superuser_pw }}"
+    no_log: true # you don't want to show passwords in your logs
+
+# run as s[isabell@stardust mailman-suite]$ python3.6 manage.py shell
+#
+#>>> from django.contrib.sites.models import Site
+#>>> site = Site.objects.get(name='example.com')
+#>>> site.name = 'Isabells Uberspace'
+#>>> site.domain = 'isabell.uber.space'
+#>>> site.save()
+#>>> exit()hell script

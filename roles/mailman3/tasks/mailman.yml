@@ -63,11 +63,11 @@
   - name: Configure mailman core
     template:
       src: mailman.cfg
-      dest: "~/{{ base_dir }}/var/etc/mailman.cfg"
+      dest: "~/{{ base_dir }}/var/etc/"
   # TODO kann man die permissions auf 660 reduzieren?
   - name: Daemonize mailman core
     template:
       src: mailman3.ini
-      dest: ~/etc/services.d/mailman3.ini
+      dest: ~/etc/services.d/
     notify: restart mailman3
   
