@@ -1,0 +1,28 @@
+---
+# This only checks this and does not create the needed
+# parts as this require password selection and so forth.
+# These should be better done by the user itself.
+
+- name: Get registered web domains
+  command: uberspace web domain list
+  changed_when: false
+  register: web_domain
+- name: "Check if '{{ domain }}' is registered for web"
+  fail: msg="Please register the domain {{ domain }} for web, see https://manual.uberspace.de/web-domains.html"
+  when: domain not in web_domain.stdout_lines
+
+- name: Get registered mail domains
+  command: uberspace mail domain list
+  changed_when: false
+  register: mail_domain
+- name: "Check if '{{ domain }}' is registered for mail"
+  fail: msg="Please register the domain {{ domain }} for mail, see https://manual.uberspace.de/mail-domains.html"
+  when: domain not in mail_domain.stdout_lines
+
+- name: Get existing mail boxes
+  command: uberspace mail user list
+  changed_when: false
+  register: mailboxes
+- name: "Check if mailbox '{{ mailbox }}' exists"
+  fail: msg="Please create the mailbox {{ mailbox }}@{{ domain }}, https://manual.uberspace.de/mail-mailboxes.html"
+  when: mailbox not in mailboxes.stdout_lines
