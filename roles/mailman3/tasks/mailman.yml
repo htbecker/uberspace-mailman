@@ -5,39 +5,69 @@
     executable: pip3.6
     state: present
 
-# follow the ansible recommendation to use get_url with checksum comparison
-- name: Download dart sass compiler
-  get_url:
-    url: "https://github.com/sass/dart-sass/releases/download/{{ dart_sass_release }}/dart-sass-{{ dart_sass_release }}-linux-x64.tar.gz"
-    dest: ~/tmp/
-    checksum: "md5:{{ dart_sass_checksum }}"
-- name: Unpack dart sass compiler
-  unarchive:
-    src: "~/tmp/dart-sass-{{ dart_sass_release }}-linux-x64.tar.gz"
-    remote_src: yes
-    dest: ~/bin/
-    creates: ~/bin/dart-sass
-# no clean up of the archive because otherwise the task will rerun
+- name: Dart SASS
+  block:
+  # follow the ansible recommendation to use get_url with checksum comparison
+  - name: Download dart sass compiler
+    get_url:
+      url: "https://github.com/sass/dart-sass/releases/download/{{ dart_sass_release }}/dart-sass-{{ dart_sass_release }}-linux-x64.tar.gz"
+      dest: ~/tmp/
+      checksum: "md5:{{ dart_sass_checksum }}"
+  - name: Unpack dart sass compiler
+    unarchive:
+      src: "~/tmp/dart-sass-{{ dart_sass_release }}-linux-x64.tar.gz"
+      remote_src: yes
+      dest: ~/bin/
+      creates: ~/bin/dart-sass
+  # no clean up of the archive because otherwise the task will rerun
 
-- name: Get the mailman-suite example configuration
-  git:
-    repo: https://gitlab.com/mailman/mailman-suite.git
-    dest: "~/tmp/mailman-suite"
-# need to use command as Uberspace provides ansible 2.5 which does not support remote recursive copies
-#- name: Copy mailman-suite to base directory
-#  copy:
-#    src: "~/tmp/mailman-suite/mailman-suite_project"
-#    dest: "{{ base_dir }}/mailman-suite/"
-#    remote_src: yes
-
-- name: Copy mailman-suite to base directory
-  command: "cp -rT ~/tmp/mailman-suite/mailman-suite_project/ ~/{{ base_dir }}/mailman-suite/"
-  args:
-    creates: "~/{{ base_dir }}/mailman-suite/"
-
+- name: Mailman Suite
+  block:
+  - name: Get the mailman-suite example configuration
+    git:
+      repo: https://gitlab.com/mailman/mailman-suite.git
+      dest: "~/tmp/mailman-suite"
+  # need to use command as Uberspace provides ansible 2.5 which does not support remote recursive copies
+  #- name: Copy mailman-suite to base directory
+  #  copy:
+  #    src: "~/tmp/mailman-suite/mailman-suite_project"
+  #    dest: "{{ base_dir }}/mailman-suite/"
+  #    remote_src: yes
+  
+  - name: Copy mailman-suite to base directory
+    command: "cp -rT ~/tmp/mailman-suite/mailman-suite_project/ ~/{{ base_dir }}/mailman-suite/"
+    args:
+      creates: "~/{{ base_dir }}/mailman-suite/"
+  
 - name: Download qmail-lmtp
   get_url:
     url: "https://gitlab.com/mailman/mailman/raw/{{ qmail_lmtp_release }}/contrib/qmail-lmtp"
     dest: ~/bin/
     checksum: "md5:{{ qmail_lmtp_checksum }}"
     mode: "0775"
+
+- name: Mailman Core
+  block:
+  - name: Create files and folders for mailman daemon
+    file:
+      path: "{{ item.path }}"
+      state: "{{ item.state }}"
+      access_time: preserve
+      modification_time: preserve
+    with_items:
+    - { path: "{{ ansible_facts.env.HOME }}/{{ base_dir }}/var/logs", state: directory }
+    - { path: "{{ ansible_facts.env.HOME }}/{{ base_dir }}/var/etc", state: directory }
+    - { path: "{{ ansible_facts.env.HOME }}/{{ base_dir }}/var/logs/daemon_err.log", state: touch }
+    - { path: "{{ ansible_facts.env.HOME }}/{{ base_dir }}/var/logs/daemon_out.log", state: touch }
+
+  - name: Configure mailman core
+    template:
+      src: mailman.cfg
+      dest: "~/{{ base_dir }}/var/etc/mailman.cfg"
+  # TODO kann man die permissions auf 660 reduzieren?
+  - name: Daemonize mailman core
+    template:
+      src: mailman3.ini
+      dest: ~/etc/services.d/mailman3.ini
+    notify: restart mailman3
+  

@@ -3,3 +3,8 @@
   supervisorctl:
     name: uwsgi
     state: restarted
+
+- name: restart mailman3
+  supervisorctl:
+    name: mailman3
+    state: restarted
