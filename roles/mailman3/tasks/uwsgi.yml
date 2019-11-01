@@ -1,0 +1,22 @@
+---
+- name: Install uwsgi
+  pip:
+    name: uwsgi
+    executable: pip3.6
+    state: present
+
+- name: Create files and folders for uwsgi
+  file:
+    path: "{{ item.path }}"
+    state: "{{ item.state }}"
+    access_time: preserve
+    modification_time: preserve
+  with_items:
+  - { path: "{{ ansible_facts.env.HOME }}/{{ base_dir }}/uwsgi/apps-enabled", state: directory }
+  - { path: "{{ ansible_facts.env.HOME }}/{{ base_dir }}/uwsgi/err.log", state: touch }
+  - { path: "{{ ansible_facts.env.HOME }}/{{ base_dir }}/uwsgi/out.log", state: touch }
+
+- name: Create uwsgi configuration
+  template:
+    src: uwsgi.ini
+    dest: "{{ ansible_facts.env.HOME }}/etc/services.d/uwsgi.ini"

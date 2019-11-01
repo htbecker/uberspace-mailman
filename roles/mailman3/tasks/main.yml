@@ -1,4 +1,4 @@
 ---
 - include: prerequisites.yml
 - include: install-mailman.yml
-
+- include: uwsgi.yml
