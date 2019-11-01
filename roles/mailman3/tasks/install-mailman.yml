@@ -1,0 +1,32 @@
+---
+- name: Install mailman and dependencies
+  pip:
+    name: [mailman, postorius, hyperkitty, mailman-hyperkitty, whoosh]
+    executable: pip3.6
+    state: present
+
+# follow the ansible recommendation to use get_url with checksum comparison
+- name: Download dart sass compiler
+  get_url:
+    url: "https://github.com/sass/dart-sass/releases/download/{{ dart_sass_release }}/dart-sass-{{ dart_sass_release }}-linux-x64.tar.gz"
+    dest: "~/tmp/"
+    checksum: "md5:{{ dart_sass_checksum }}"
+- name: Unpack dart sass compiler
+  unarchive:
+    src: "~/tmp/dart-sass-{{ dart_sass_release }}-linux-x64.tar.gz"
+    remote_src: yes
+    dest: "~/bin/"
+# no clean up of the archive because otherwise the task will rerun
+
+- name: Get the mailman-suite example configuration
+  git:
+    repo: https://gitlab.com/mailman/mailman-suite.git
+    dest: "~/tmp/mailman-suite"
+# need to use command as Uberspace provides ansible 2.5 which does not support remote recursive copies
+#- name: Copy mailman-suite to base directory
+#  copy:
+#    src: "~/tmp/mailman-suite/mailman-suite_project"
+#    dest: "{{ base_dir }}/mailman-suite/"
+#    remote_src: yes
+- name: Copy mailman-suite to base directory
+  command: "cp -rT ~/tmp/mailman-suite/mailman-suite_project/ ~/{{ base_dir }}/mailman-suite/"

@@ -1,12 +1,4 @@
 ---
 - hosts: all
-  vars:
-    # will be extended to {{ username }}.uber.space
-    domain: hannes-becker.de
-    # will be extended to {{ mailbox }}@{{ username }}.uber.space
-    mailbox: postbote
-    # base dir to put all additional files, this is relative to home. Use . for HOME
-    base_dir: mailman
   roles:
-  - uberspace7-prerequisites
-#  - mailman3
+  - mailman3

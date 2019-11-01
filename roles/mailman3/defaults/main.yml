@@ -1,0 +1,11 @@
+# will be extended to {{ username }}.uber.space
+domain: hannes-becker.de
+# will be extended to {{ mailbox }}@{{ username }}.uber.space
+mailbox: postbote
+# base dir to put all additional files, this is relative to home. Use . for HOME
+base_dir: mailman
+
+# The dart-sass release version to download
+# Find list of release at https://github.com/sass/dart-sass/releases
+dart_sass_release: 1.23.3
+dart_sass_checksum: e1f52422676bdf2b6e3fb144bd933a65
