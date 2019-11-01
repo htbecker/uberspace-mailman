@@ -6,6 +6,7 @@
 - name: Get registered web domains
   command: uberspace web domain list
   changed_when: false
+  check_mode: no
   register: web_domain
 - name: "Check if '{{ domain }}' is registered for web"
   fail: msg="Please register the domain {{ domain }} for web, see https://manual.uberspace.de/web-domains.html"
@@ -13,6 +14,7 @@
 
 - name: Get registered mail domains
   command: uberspace mail domain list
+  check_mode: no
   changed_when: false
   register: mail_domain
 - name: "Check if '{{ domain }}' is registered for mail"
@@ -20,6 +22,7 @@
   when: domain not in mail_domain.stdout_lines
 
 - name: Get existing mail boxes
+  check_mode: no
   command: uberspace mail user list
   changed_when: false
   register: mailboxes
