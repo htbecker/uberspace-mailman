@@ -9,3 +9,7 @@ base_dir: mailman
 # Find list of release at https://github.com/sass/dart-sass/releases
 dart_sass_release: 1.23.3
 dart_sass_checksum: e1f52422676bdf2b6e3fb144bd933a65
+
+# Mailman version to take qmail-lmtp from
+qmail_lmtp_release: 3.2.2
+qmail_lmtp_checksum: 10e22f99a2bb6e7370e4c882cb8f5191

@@ -34,3 +34,10 @@
   command: "cp -rT ~/tmp/mailman-suite/mailman-suite_project/ ~/{{ base_dir }}/mailman-suite/"
   args:
     creates: "~/{{ base_dir }}/mailman-suite/"
+
+- name: Download qmail-lmtp
+  get_url:
+    url: "https://gitlab.com/mailman/mailman/raw/{{ qmail_lmtp_release }}/contrib/qmail-lmtp"
+    dest: ~/bin/
+    checksum: "md5:{{ qmail_lmtp_checksum }}"
+    mode: "0775"
