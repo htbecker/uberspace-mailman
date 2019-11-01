@@ -29,3 +29,9 @@
 - name: "Check if mailbox '{{ mailbox }}' exists"
   fail: msg="Please create the mailbox {{ mailbox }}@{{ domain }}, https://manual.uberspace.de/mail-mailboxes.html"
   when: mailbox not in mailboxes.stdout_lines
+
+- name: "Create base directory {{ base_dir }}"
+  file:
+    path: "{{ ansible_facts.env.HOME }}/{{ base_dir }}"
+    state: directory
+ 
