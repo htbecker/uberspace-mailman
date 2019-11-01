@@ -20,3 +20,4 @@
   template:
     src: uwsgi.ini
     dest: "{{ ansible_facts.env.HOME }}/etc/services.d/uwsgi.ini"
+  notify: restart uwsgi
