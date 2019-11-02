@@ -39,12 +39,16 @@
         (?i)email: "{{ django_superuser_email }}"
         (?i)password: "{{ django_superuser_pw }}"
     no_log: true # you don't want to show passwords in your logs
+  - name: Rename default django site
+    script: django-rename-site.py {{ domain }} {{ django_site_name }}
+    args:
+      executable: python3.6
+      chdir: "{{ ansible_facts.env.HOME }}/{{ base_dir }}/mailman-suite/"
+    register: django_site
+    changed_when: "'renamed site' in django_site.stdout_lines"
 
-# run as s[isabell@stardust mailman-suite]$ python3.6 manage.py shell
-#
-#>>> from django.contrib.sites.models import Site
-#>>> site = Site.objects.get(name='example.com')
-#>>> site.name = 'Isabells Uberspace'
-#>>> site.domain = 'isabell.uber.space'
-#>>> site.save()
-#>>> exit()hell script
+- name: Configure Mailman suite
+  template:
+    src: mailman-suite.ini
+    dest: "~/{{ base_dir}}/uwsgi/apps-enabled/"
+  notify: restart uwsgi
