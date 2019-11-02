@@ -21,7 +21,7 @@ ALLOWED_HOSTS = [
 # TODO check if local is needed
 # TODO check if this port needs chaning
 # MAILMAN_REST_API_URL = 'http://isabell.local.uberspace.de:8001'
-MAILMAN_REST_API_URL = 'http://{{ domain }}:8001'
+MAILMAN_REST_API_URL = 'http://{{ domain }}:{{ mailman_port_rest }}'
 MAILMAN_REST_API_USER = 'rest_api_admin_user'
 MAILMAN_REST_API_PASS = 'rest_api_admin_pw'
 MAILMAN_ARCHIVER_KEY = '{{ django_secret_archiver_api_key }}'

@@ -1,7 +1,14 @@
 ---
-- name: Install mailman and dependencies
+- name: Install mailman
   pip:
-    name: [mailman, postorius, hyperkitty, mailman-hyperkitty, whoosh]
+    name: mailman
+    version: "{{ mailman_version }}"
+    executable: pip3.6
+    state: present
+
+- name: Install mailman dependencies
+  pip:
+    name: [postorius, hyperkitty, mailman-hyperkitty, whoosh]
     executable: pip3.6
     state: present
 
@@ -27,13 +34,7 @@
     git:
       repo: https://gitlab.com/mailman/mailman-suite.git
       dest: "~/tmp/mailman-suite"
-  # need to use command as Uberspace provides ansible 2.5 which does not support remote recursive copies
-  #- name: Copy mailman-suite to base directory
-  #  copy:
-  #    src: "~/tmp/mailman-suite/mailman-suite_project"
-  #    dest: "{{ base_dir }}/mailman-suite/"
-  #    remote_src: yes
-  
+    notify: restart mailman3
   - name: Copy mailman-suite to base directory
     command: "cp -rT ~/tmp/mailman-suite/mailman-suite_project/ ~/{{ base_dir }}/mailman-suite/"
     args:

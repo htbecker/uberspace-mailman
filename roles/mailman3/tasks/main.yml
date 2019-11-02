@@ -9,5 +9,5 @@
   tags: django
 - include: qmail.yml
   tags: qmail
-#- include: make-public.yml
-#  tags: publish
+- include: make-public.yml
+  tags: publish
