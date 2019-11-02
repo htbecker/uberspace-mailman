@@ -1,5 +1,13 @@
 ---
 - include: prerequisites.yml
+  tags: prepare
 - include: mailman.yml # todo add tags for sections
+  tags: mailman
 - include: uwsgi.yml
+  tags: uwsgi
 - include: django.yml
+  tags: django
+- include: qmail.yml
+  tags: qmail
+#- include: make-public.yml
+#  tags: publish

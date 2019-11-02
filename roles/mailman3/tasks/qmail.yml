@@ -1,0 +1,12 @@
+---
+# This section also does not follow the original tutorial.
+# Instead of sending all mails to mailman or the need to manually
+# create qmail files for every list. We create a default forwarder
+# for all mail with a list-* prefix. As long as we only create
+# mailing lists with a name list-whatever@domain we are fine.
+
+- name: Create qmail forwarding to mailman for list prefix
+  copy:
+    dest: "~/.qmail-{{ mailing_list_prefix }}-default"
+    content: |
+      |{{ ansible_facts.env.HOME }}/bin/qmail-lmtp 8024 1 {{  ansible_facts.env.USER }}.local.uberspace.de
