@@ -70,4 +70,10 @@
       src: mailman3.ini
       dest: ~/etc/services.d/
     notify: restart mailman3
-  
+
+- name: Setup mailman cronjob
+  cron:
+    job: "{{ ansible_facts.env.HOME }}/.local/bin/mailman digests --send"
+    name: Mailman daily digests
+    special_time: daily
+    
