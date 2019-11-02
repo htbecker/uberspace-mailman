@@ -1,0 +1,8 @@
+---
+- name: Make mailman public available
+  shell: "uberspace web backend set / --http --port {{ mailman_port }}"
+  register: publish_mailman
+#  changed_when: "'Set backend for / to port 8007
+
+- name: Serve the Django static files publicly
+  shell: "uberspace web backend set /static --apache"
